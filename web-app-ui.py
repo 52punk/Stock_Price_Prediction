@@ -34,11 +34,14 @@ stocks_data = ('Union Bank of India', 'State Bank of India', 'Bank of India', 'B
 
 
 def choose_dataset(stocks, stocks_data):
-    stock = st.selectbox('Select the bank', stocks_data )
+    st.sidebar.subheader('Select the bank')
+    stock = st.sidebar.selectbox( "", stocks_data, key='1' )
+    check = st.sidebar.checkbox("Hide", value=True, key='1')
+    #st.sidebar.write(check)
     for itr in stocks_data:
         if stock==itr:
             main_df=stocks[itr]
-    return main_df
+    return main_df, check, stock
 
 
 
@@ -176,41 +179,51 @@ def plot_forecast_data(df, days):
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=day_new, y=y_data[0], name="1"))
     fig.add_trace(go.Scatter(x=day_pred, y=lst_output[0], name="2"))
-    fig.layout.update(title_text='Forcasted Data', xaxis_rangeslider_visible=True)
+    fig.layout.update( xaxis_rangeslider_visible=True)
     st.plotly_chart(fig)
     #plt.plot(day_new,scaler.inverse_transform(new_df[1132:]))
     #plt.plot(day_pred,scaler.inverse_transform(lst_output))
 
 
-def user_interface():
-    st.sidebar.subheader("Stock Market Predictor")
-    st.sidebar.markdown("---")
-    forecast = st.slider("Days to forecast",min_value=10,max_value=100,step=5)
-    #st.header(f"You chose {stock} forecast for {forecast} days")
-    return forecast
+
     
 
 def plot_raw_data(data):
-	fig = go.Figure()
-	fig.add_trace(go.Scatter(x=data['Date'], y=data['Open'], name="stock_open"))
-	fig.add_trace(go.Scatter(x=data['Date'], y=data['Close'], name="stock_close"))
-	fig.layout.update( xaxis_rangeslider_visible=True)
-	st.plotly_chart(fig)
-	
+    
+   	fig = go.Figure()
+   	fig.add_trace(go.Scatter(x=data['Date'], y=data['Open'], name="stock_open"))
+   	fig.add_trace(go.Scatter(x=data['Date'], y=data['Close'], name="stock_close"))
+   	fig.layout.update( xaxis_rangeslider_visible=True)
+   	st.plotly_chart(fig)
+    	
 
-
+def landing_ui():
+    st.header("Welcome to Stock Price Predictor")
+    st.write("Welcome to this site, it is still in its beta stage!")
+    st.write("To see the data representation please uncheck the hide button in the sidebar")
     
 
 if __name__ == "__main__":
-    st.header("Welcome to Stock Price Predictor")
-    temp=choose_dataset(stocks, stocks_data)
-    print(temp)
-    st.subheader("Raw Data")
-    st.write(temp)
     
-    forecast = user_interface()
-    st.subheader("Raw Data - Visualized")
-    plot_raw_data(temp)
-    st.subheader("Predicted data")
-    plot_predict(temp)
-    plot_forecast_data(temp, forecast)
+    st.sidebar.subheader("Stock Market Predictor")
+    st.sidebar.markdown("---")
+    temp, check, name=choose_dataset(stocks, stocks_data)
+    #print(temp)
+    if not check:
+        st.header(f"Analyzing {name}'s stock data")
+        st.subheader("Raw Data")
+        st.write(temp)
+        
+        
+        st.subheader("Raw Data - Visualized")
+        plot_raw_data(temp)
+        st.subheader("Predicted data")
+        plot_predict(temp)
+        st.sidebar.subheader("Forecasted Data")
+        forecast_check = st.sidebar.checkbox("try", value=False)
+        if forecast_check:
+            forecast = st.slider("Days to forecast",min_value=10,max_value=100,step=5)
+            st.subheader("Forcasted data")
+            plot_forecast_data(temp, forecast)
+    else:
+        landing_ui()
