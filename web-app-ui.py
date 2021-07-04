@@ -17,14 +17,14 @@ import matplotlib.pyplot as plt
 
 
 
-model = load_model("C:/Users/52pun/Desktop/Repos/Stock_Price_Prediction/python_script/saved_models/UnionBankOfIndia.h5")
+model = load_model("python_script/saved_models/UnionBankOfIndia.h5")
 
 
-union_data = pd.read_csv("C:/Users/52pun/Desktop/Repos/Stock_Price_Prediction/Data/Bank_data/UNIONBANK_5Y.csv")
-boi_data = pd.read_csv("C:/Users/52pun/Desktop/Repos/Stock_Price_Prediction/Data/Bank_data/BOI_5Y.csv")
-bob_data = pd.read_csv("C:/Users/52pun/Desktop/Repos/Stock_Price_Prediction/Data/BANKBARODA_5Y.csv")
-sbi_data = pd.read_csv("C:/Users/52pun/Desktop/Repos/Stock_Price_Prediction/Data/Bank_data/SBIN_5Y.csv")
-pnb_data = pd.read_csv("C:/Users/52pun/Desktop/Repos/Stock_Price_Prediction/Data/Bank_data/PNB_5Y.csv")
+union_data = pd.read_csv("Data/Bank_data/UNIONBANK_5Y.csv")
+boi_data = pd.read_csv("Data/Bank_data/BOI_5Y.csv")
+bob_data = pd.read_csv("Data/BANKBARODA_5Y.csv")
+sbi_data = pd.read_csv("Data/Bank_data/SBIN_5Y.csv")
+pnb_data = pd.read_csv("Data/Bank_data/PNB_5Y.csv")
 
 stocks = {'Union Bank of India': union_data, 'State Bank of India': sbi_data, 'Bank of India': boi_data, 'Bank of Baroda': bob_data, 'Punjab National Bank': pnb_data}
 stocks_data = ('Union Bank of India', 'State Bank of India', 'Bank of India', 'Bank of Baroda', 'Punjab National Bank')
