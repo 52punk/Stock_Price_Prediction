@@ -8,7 +8,7 @@ Created on Mon Jun 28 14:14:48 2021
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
-from keras.models import load_model
+from tensorflow.keras.models import load_model
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 import matplotlib.pyplot as plt
