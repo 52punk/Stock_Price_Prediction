@@ -11,14 +11,16 @@ import plotly.graph_objects as go
 from tensorflow.keras.models import load_model
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
-import matplotlib.pyplot as plt
 
 
 
 
 
-model = load_model("python_script/saved_models/UnionBankOfIndia.h5")
-
+union_model = load_model("python_script/saved_models/UnionBankOfIndia.h5")
+boi_model = load_model("python_script/saved_models/BankOfIndia_model.h5")
+bob_model = load_model("python_script/saved_models/BankOfBaroda.h5")
+sbi_model = load_model("python_script/saved_models/StateBankOfIndia_model.h5")
+pnb_model = load_model("python_script/saved_models/PunjabNationalBank.h5")
 
 union_data = pd.read_csv("Data/Bank_data/UNIONBANK_5Y.csv")
 boi_data = pd.read_csv("Data/Bank_data/BOI_5Y.csv")
@@ -26,25 +28,34 @@ bob_data = pd.read_csv("Data/BANKBARODA_5Y.csv")
 sbi_data = pd.read_csv("Data/Bank_data/SBIN_5Y.csv")
 pnb_data = pd.read_csv("Data/Bank_data/PNB_5Y.csv")
 
+allmodels = {'Union Bank of India': union_model, 'State Bank of India': sbi_model, 'Bank of India': boi_model, 'Bank of Baroda': bob_model, 'Punjab National Bank': pnb_model}
 stocks = {'Union Bank of India': union_data, 'State Bank of India': sbi_data, 'Bank of India': boi_data, 'Bank of Baroda': bob_data, 'Punjab National Bank': pnb_data}
 stocks_data = ('Union Bank of India', 'State Bank of India', 'Bank of India', 'Bank of Baroda', 'Punjab National Bank')
 
 
 
+n_steps = 30
 
-
-def choose_dataset(stocks, stocks_data):
+def choose_dataset(stocks, stocks_data, allmodels):
     st.sidebar.subheader('Select the bank')
     stock = st.sidebar.selectbox( "", stocks_data, key='1' )
     check = st.sidebar.checkbox("Hide", value=True, key='1')
+    
     #st.sidebar.write(check)
     for itr in stocks_data:
         if stock==itr:
             main_df=stocks[itr]
-    return main_df, check, stock
+            model=allmodels[itr]
+    return main_df, check, stock, model
 
 
-
+def about_section():
+    st.sidebar.subheader('Made By:')
+    st.sidebar.markdown("Mrinab Dey")
+    st.sidebar.markdown('[LinkedIn](https://www.linkedin.com/in/mrinabdey/) [Github](https://github.com/mrinabdey)', unsafe_allow_html=True)
+    st.sidebar.markdown("Pankaj Kumar Sah")
+    st.sidebar.markdown('[LinkedIn](https://www.linkedin.com/in/pankaj-sah-b7aa39186/) [Github](https://github.com/52punk)', unsafe_allow_html=True)
+    
 
 def create_dataset(dataset, time_step=1):
 	dataX, dataY = [], []
@@ -56,133 +67,162 @@ def create_dataset(dataset, time_step=1):
 
 
 
-def plot_predict(df):
+def plot_predict(df, model, name):
     
-    date = df["Date"]
-    df = df["Close"]
+    
+    df = df.drop(["Open", "Low", "Adj Close", "Volume"], axis=1)
     df = df.dropna()
-    ori_df = df
-    df.shape
-    #print(f" {df}")
+    Date = df["Date"]
+    close = df["Close"]
+    close = close.dropna()
     scaler = MinMaxScaler(feature_range=(0,1))
-    tmp = scaler.fit(np.array(df).reshape(-1,1))
-    new_df = scaler.transform(np.array(df).reshape(-1,1))
-    
-    
-    #print(new_df.shape)
-    
+    tmp = scaler.fit(np.array(close).reshape(-1,1))
+    new_df = scaler.transform(np.array(close).reshape(-1,1))
     
     training_size=int(len(new_df)*0.67)
     test_size=len(new_df)-training_size
-    train_data,test_data=new_df[0:training_size,:],new_df[training_size:len(new_df),:1]
+    train_data,test_data=new_df[:training_size],new_df[training_size:]
+    Date_train, Date_test = Date[:training_size], Date[training_size:]
     
-    #print(train_data.shape)
-    #print(test_data.shape)
-    
-    
-    time_step=100
+    n_steps = 30
+    time_step=n_steps
     X_train, Y_train = create_dataset(train_data, time_step)
     X_test, Y_test = create_dataset(test_data, time_step)
-    #print(X_train.shape, Y_train.shape, X_test.shape, Y_test.shape)
-    #print(X_train, Y_train)
-    
+    print(X_train.shape, Y_train.shape, X_test.shape, Y_test.shape)
     X_train =X_train.reshape(X_train.shape[0],X_train.shape[1] , 1)
     X_test = X_test.reshape(X_test.shape[0],X_test.shape[1] , 1)
-    #print(X_train.shape, X_test.shape)
-    #print(X_train, Y_train)
+    print(X_train.shape, X_test.shape)
+    
+    
+    
     
     train_predict=model.predict(X_train)
     test_predict=model.predict(X_test)
-    #print(train_predict.shape, test_predict.shape)
+    print(train_predict.shape, test_predict.shape)
     
+    from sklearn.metrics import mean_squared_error
+    print(f'Train error - {mean_squared_error(train_predict, Y_train)*100}')
+    print(f'Test error - {mean_squared_error(test_predict, Y_test)*100}')
     
     train_predict=scaler.inverse_transform(train_predict)
     test_predict=scaler.inverse_transform(test_predict)
+    X_train=X_train.reshape(-1, 1)
+    X_test=X_test.reshape(-1, 1)
+    close_train=scaler.inverse_transform(train_data)
+    close_test=scaler.inverse_transform(test_data)
+    close_train = close_train.reshape(-1)
+    close_test = close_test.reshape(-1)
+    prediction = test_predict.reshape((-1))
     
-    look_back=100
-    trainPredictPlot = np.empty_like(new_df)
-    trainPredictPlot[:, :] = np.nan
-    trainPredictPlot[look_back-2:len(train_predict)+look_back-2, :] = train_predict
-    # shift test predictions for plotting
-    testPredictPlot = np.empty_like(new_df)
-    testPredictPlot[:, :] = np.nan
-    testPredictPlot[len(train_predict)+(look_back*2)-1:len(new_df)-3, :] = test_predict
-    #ori_df = scaler.inverse_transform(new_df).reshape(-1,1)
-    #print(f"Original data {ori_df}")
-    ori_df = pd.DataFrame(ori_df)
-    #print(f"ori {ori_df}")
-    trainPredictPlot = pd.DataFrame(trainPredictPlot)
-    testPredictPlot = pd.DataFrame(testPredictPlot)
-    #print(f"To dataframe {ori_df}")
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=date, y=ori_df["Close"], name="Original closing prices"))
-    fig.add_trace(go.Scatter(x=date, y=trainPredictPlot[0], name="train_close"))
-    fig.add_trace(go.Scatter(x=date, y=testPredictPlot[0], name="test_close"))
-    fig.layout.update( xaxis_rangeslider_visible=True)
+    trace1 = go.Scatter(
+        x = Date_train,
+        y = close_train,
+        mode = 'lines',
+        name = 'Data'
+    )
+    trace2 = go.Scatter(
+        x = Date_test[n_steps:],
+        y = prediction,
+        mode = 'lines',
+        name = 'Prediction'
+    )
+    trace3 = go.Scatter(
+        x = Date_test,
+        y = close_test,
+        mode='lines',
+        name = 'Ground Truth'
+    )
+    layout = go.Layout(
+        title = name,
+        xaxis = {'title' : "Date"},
+        yaxis = {'title' : "Close"}
+    )
+    fig = go.Figure(data=[trace1, trace2, trace3], layout=layout)
+    
+
     st.plotly_chart(fig)
     #fig.show()
     
     
 
 
-def plot_forecast_data(df, days):
-    u_close = df["Close"]
-    u_close = u_close.dropna()
-    u_close.shape
+def plot_forecast_data(df, days, model, name):
     
-    
+    df = df.drop(["Open", "Low", "Adj Close", "Volume"], axis=1)
+    df = df.dropna()
+    Date = df["Date"]
+    close = df["Close"]
+    close = close.dropna()
     scaler = MinMaxScaler(feature_range=(0,1))
-    tmp = scaler.fit(np.array(u_close).reshape(-1,1))
-    new_df = scaler.transform(np.array(u_close).reshape(-1,1))
-    training_size=int(len(new_df)*0.67)
-    test_size=len(new_df)-training_size
-    train_data,test_data=new_df[0:training_size,:],new_df[training_size:len(new_df),:1]
+    tmp = scaler.fit(np.array(close).reshape(-1,1))
+    new_df = scaler.transform(np.array(close).reshape(-1,1))
     
-    x_input=test_data[307:].reshape(1,-1)
-    print(x_input.shape)
-    temp_input=list(x_input)
-    temp_input=temp_input[0].tolist()
-    lst_output=[]
-    n_steps=100
-    i=0
-    while(i<days):
+    
+    
+    test_data = close
+    test_data = scaler.transform(np.array(close).reshape(-1,1))
+    test_data = test_data.reshape((-1))
+    
+    def predict(num_prediction, model):
+        prediction_list = test_data[-n_steps:]
         
-        if(len(temp_input)>100):
-            print(len(temp_input))
-            x_input=np.array(temp_input[1:])
-            print("{} day input {}".format(i,x_input))
-            x_input=x_input.reshape(1,-1)
-            x_input = x_input.reshape((1, n_steps, 1))
-            #print(x_input)
-            yhat = model.predict(x_input, verbose=0)
-            print("{} day output {}".format(i,yhat))
-            temp_input.extend(yhat[0].tolist())
-            temp_input=temp_input[1:]
-            #print(temp_input)
-            lst_output.extend(yhat.tolist())
-            i=i+1
-        else:
-            x_input = x_input.reshape((1, n_steps,1))
-            yhat = model.predict(x_input, verbose=0)
-            print(yhat[0])
-            temp_input.extend(yhat[0].tolist())
-            print(len(temp_input))
-            lst_output.extend(yhat.tolist())
-            i=i+1
+        for _ in range(num_prediction):
+            x = prediction_list[-n_steps:]
+            x = x.reshape((1, n_steps, 1))
+            out = model.predict(x)[0][0]
+            prediction_list = np.append(prediction_list, out)
+        prediction_list = prediction_list[n_steps-1:]
+            
+        return prediction_list
+        
+    def predict_dates(num_prediction):
+        last_date = df['Date'].values[-1]
+        prediction_dates = pd.date_range(last_date, periods=num_prediction+1).tolist()
+        return prediction_dates
     
-    day_new=np.arange(1,101)
-    day_pred=np.arange(101,131)
-    lst_output = scaler.inverse_transform(lst_output)
-    lst_output = pd.DataFrame(lst_output)
-    y_data = scaler.inverse_transform(new_df[1132:])
-    y_data = pd.DataFrame(y_data)
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=day_new, y=y_data[0], name="1"))
-    fig.add_trace(go.Scatter(x=day_pred, y=lst_output[0], name="2"))
-    fig.layout.update( xaxis_rangeslider_visible=True)
+    num_prediction =days
+    forecast = predict(num_prediction, model)
+    forecast_dates = predict_dates(num_prediction)
+    forecast = forecast.reshape(1, -1)
+    forecast = scaler.inverse_transform(forecast)
+    forecast
+    test_data = test_data.reshape(1, -1)
+    test_data = scaler.inverse_transform(test_data)
+    test_data = test_data.reshape(-1)
+    forecast = forecast.reshape(-1)
+    res = dict(zip(forecast_dates, forecast))
+    date = df["Date"]
+    trace1 = go.Scatter(
+        x = date,
+        y = test_data,
+        mode = 'lines',
+        name = 'Data'
+    )
+    trace2 = go.Scatter(
+        x = forecast_dates,
+        y = forecast,
+        mode = 'lines',
+        name = 'Prediction'
+    )
+    layout = go.Layout(
+    title = name,
+    xaxis = {'title' : "Date"},
+    yaxis = {'title' : "Close"}
+    )
+    
+    fig = go.Figure(data=[trace1, trace2], layout=layout)
     st.plotly_chart(fig)
-    #plt.plot(day_new,scaler.inverse_transform(new_df[1132:]))
-    #plt.plot(day_pred,scaler.inverse_transform(lst_output))
+    #fig.show()
+    choose_date = st.selectbox("Date", forecast_dates)
+    for itr in res:
+        if choose_date==itr:
+            res_price=res[itr]
+    st.write(f"On {choose_date} the stock price will be Rs. {res_price}")
+
+    
+    
+    
+    
 
 
 
@@ -199,7 +239,11 @@ def plot_raw_data(data):
 
 def landing_ui():
     st.header("Welcome to Stock Price Predictor")
-    st.write("Welcome to this site, it is still in its beta stage!")
+    st.write("")
+    st.write("")
+    st.write("Welcome to this site")
+    st.write("As the model is trained with data having time steps of 30 days so it will give its best results for a forecast till 30days ")
+    st.write("")
     st.write("To see the data representation please uncheck the hide button in the sidebar")
     
 
@@ -207,7 +251,8 @@ if __name__ == "__main__":
     
     st.sidebar.subheader("Stock Market Predictor")
     st.sidebar.markdown("---")
-    temp, check, name=choose_dataset(stocks, stocks_data)
+    temp, check, name, model=choose_dataset(stocks, stocks_data, allmodels)
+    #about_section()
     #print(temp)
     if not check:
         st.header(f"Analyzing {name}'s stock data")
@@ -218,12 +263,14 @@ if __name__ == "__main__":
         st.subheader("Raw Data - Visualized")
         plot_raw_data(temp)
         st.subheader("Predicted data")
-        plot_predict(temp)
+        plot_predict(temp, model, name)
         st.sidebar.subheader("Forecasted Data")
-        forecast_check = st.sidebar.checkbox("try", value=False)
+        forecast_check = st.sidebar.checkbox("See the results", value=False)
+        about_section()
         if forecast_check:
-            forecast = st.slider("Days to forecast",min_value=10,max_value=100,step=5)
+            forecast = st.slider("Days to forecast",min_value=30,max_value=100,step=5)
             st.subheader("Forcasted data")
-            plot_forecast_data(temp, forecast)
+            
+            plot_forecast_data(temp, forecast, model, name)
     else:
         landing_ui()
