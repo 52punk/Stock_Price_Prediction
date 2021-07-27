@@ -245,6 +245,8 @@ def landing_ui():
     st.write("As the model is trained with data having time steps of 30 days so it will give its best results for a forecast till 30days ")
     st.write("")
     st.write("To see the data representation please uncheck the hide button in the sidebar")
+    st.write("")
+    st.write("Share market investments are subject to market risks, read all scheme related documents carefully. The NAVs of the schemes may go up or down depending upon the factors and forces affecting the securities market including the fluctuations in the interest rates. The past performance of the stocks is not necessarily indicative of future performance of the schemes.")
     
 
 if __name__ == "__main__":
