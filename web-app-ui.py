@@ -269,7 +269,7 @@ if __name__ == "__main__":
         about_section()
         if forecast_check:
             forecast = st.slider("Days to forecast",min_value=30,max_value=100,step=5)
-            st.subheader("Forcasted data")
+            st.subheader("Forecasted data")
             
             plot_forecast_data(temp, forecast, model, name)
     else:
