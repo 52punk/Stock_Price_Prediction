@@ -8,6 +8,16 @@ Click [here](https://share.streamlit.io/52punk/stock_price_prediction/main/web-a
 - [Mrinab Dey](https://github.com/mrinab/)
 - [Pankaj Kumar Sah](https://github.com/52punk/)
 
+## Run this locally
+
+- Clone this repo, then run this command for installing the requirements
+
+`pip install -r requirements.txt`
+
+- After installing, run this command for launching the web-app
+
+`streamlit run web-app-ui.py`
+
 ## Feature
 
 - [Abstract](#abstract)
