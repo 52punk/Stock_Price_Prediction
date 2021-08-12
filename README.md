@@ -30,7 +30,7 @@ Click [here](https://share.streamlit.io/52punk/stock_price_prediction/main/web-a
 - [Future Scope](#future-scope)
 - [References](#references)
 
-### Abstract
+## Abstract
 
 In this project, we worked in the area of artificial intelligence. Artificial intelligence is the method in which we use certain algorithms and data to provide machines with an ability to think like a human. With the aid of artificial intelligence, machines get the ability to analyze a problem and make decisions based on the analysis to solve the problem. The importance of work can be determined from the fact that it will help us in determining the future price of a stock so that we can decide which stocks we need to invest in to earn good profits out of the market. And as all the predictions are made by machines themselves, no human effort is needed which eventually saves us a lot of time.In the project, we have used the previous price of a stock over a period of five years in order to determine the current price of the stock. This data was then pre-processed and fed into the model in order to train it. After the training is complete, our model was able to predict the stock prices.
 The result that was achieved at the end of this project was quite impressive as the model was able to predict the trend successfully, it wasn’t 100% accurate but considering that it predicted only on the basis of the past data is quite impressive. The accuracy of the results showed that we could predict the stock prices quite accurately which would mean that we could use the same model to invest in the stock markets to earn good profits without much effort.
@@ -40,14 +40,14 @@ sentiments into it. Throughout this project we used python as the programming la
 Spyder as the IDE and used many python libraries viz. tensorflow, scikit learn, plotly, 
 streamlit, numpy, pandas and keras.
 
-### Introduction
+## Introduction
 In this project, we worked in the area of artificial intelligence. Artificial intelligence is the method in which we use certain algorithms and data to provide machines with an ability to think like a human. With the aid of artificial intelligence, machines get the ability to analyze a problem and make decisions based on the analysis to solve the problem. The sub-field of artificial intelligence in which we worked is machine learning. Machine learning enables a machine to execute tasks without being explicitly programmed by a human. As machine learning has its own set of sub-fields, the sub-field of machine learning in which we worked is deep learning. Deep learning is that field of machine learning which enables a machine to mimic the human brain with regard to data processing and making patterns that helps in the process of decision making. 
 
-### Objective
+## Objective
 The main objective of our work was to build an LSTM model that accepts the day closing price of a stock as an input and processes the input to make predictions on the future price of the stock.In order to achieve the primary objective, we first had to collect the data and then process the data to make it into a valid input for the model. We also split the data for training and testing purpose. We then trained our model with the training data which enabled our model to predict the price of a stock.
 
 
-### Literature Overview
+## Literature Overview
 
 * LSTM Architecture
 
@@ -67,7 +67,7 @@ Deep learning overcomes some of the limitations of machine learning through its 
 * Theoritical Discussion
 Deep learning is a type of machine learning algorithm that uses more than one layer to extract higher-level features from the raw input data. Most of the deep learning models are based on ANN (Artificial Neural Networks). In deep learning, each level transforms its input data into more abstract and composite representation. The word deep learning is in reference to the number of layers through which the data is being transformed. Deep learning architectures are made using a greedy layer by layer method. Deep learning algorithms can be applied to unsupervised learning tasks. This gives us a huge benefit as unlabeled data is in more abundance as compared to labelled data.
 
-### Methodology
+## Methodology
 
 For this project we’ve used the past data of the stock as our factor, we took last 5 years of stock’s performance data. The data was collected from yahoo finance’s website 
 
@@ -81,7 +81,7 @@ After creating the model we trained it on our training model for a particular nu
 After all this our model was ready to be predicted, so we fed it with our testing data and predicted whether it yielded satisfying results or not. After the prediction work we then moved on to the forecasting part where the model future forecast performance for the chosen stock.
 
 
-### Tools Used
+## Tools Used
 
 - Programming Language
   - Python
@@ -102,7 +102,7 @@ After all this our model was ready to be predicted, so we fed it with our testin
   - streamlit (0.83.0) - Streamlit is an open-source Python library that makes it easy to create and share beautiful, custom web apps for machine learning and data science
 
 
-### Result Analysis
+## Result Analysis
 
 For State Bank of India:
 We took 30 days stamp for arranging the original data into time series data. The model gave very nice result for this time series stamp. We made the model which consisted of 3 LSTM layers and one dense layer for getting the output, this model was trained for 100 epochs which in result yielded a decent forecast for next 30 days.
@@ -128,11 +128,11 @@ Moreover, if we wish to forecast the prices for next 60 or 100 days then we must
 </p>
 
 
-### Future Scope
+## Future Scope
 
 Predicting the stock market is a tuff job to do and we made our utmost effort to do so by time series analysis of past stock prices. But we also realised that only time series data analysis won’t be enough for predicting the stock market, so, we plan to take this project a level up by integrating NLP (Natural Language Processing ) algorithms for getting the sentiments of the market news, twitter trends etc and integrating it into this project and making it more capable to predict precise trends/prices of the stocks.
 
-### References
+## References
 
 - [LSTM architecture](https://colah.github.io/posts/2015-08-Understanding-LSTMs) by Oinkina
 - [Time series forecasting](https://towardsdatascience.com) by towardsdatascience.com
