@@ -51,10 +51,10 @@ def choose_dataset(stocks, stocks_data, allmodels):
 
 def about_section():
     st.sidebar.subheader('Made By:')
-    st.sidebar.markdown("Mrinab Dey")
-    st.sidebar.markdown('[LinkedIn](https://www.linkedin.com/in/mrinabdey/) [Github](https://github.com/mrinabdey)', unsafe_allow_html=True)
-    st.sidebar.markdown("Pankaj Kumar Sah")
-    st.sidebar.markdown('[LinkedIn](https://www.linkedin.com/in/pankaj-sah-b7aa39186/) [Github](https://github.com/52punk)', unsafe_allow_html=True)
+    st.sidebar.markdown("Anand Ghatol")
+    # st.sidebar.markdown('[LinkedIn](https://www.linkedin.com/in/mrinabdey/) [Github](https://github.com/mrinabdey)', unsafe_allow_html=True)
+    # st.sidebar.markdown("Pankaj Kumar Sah")
+    # st.sidebar.markdown('[LinkedIn](https://www.linkedin.com/in/pankaj-sah-b7aa39186/) [Github](https://github.com/52punk)', unsafe_allow_html=True)
     
 
 def create_dataset(dataset, time_step=1):
